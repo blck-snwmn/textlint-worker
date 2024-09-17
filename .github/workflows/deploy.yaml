@@ -16,6 +16,8 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 8
+      - name: Install
+        run: pnpm install
       - name: Deploy
         run: pnpm run deploy
         env:
