@@ -12,3 +12,11 @@ $ echo -n "TODO: test" | http :8787
 ```
 -> OK
 
+## Lint
+```bash
+$ pnpm biome check . --write 
+```
+## Deploy
+```bash
+$ pnpm run deploy
+```
