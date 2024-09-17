@@ -1,18 +1,35 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.toml`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import { TextlintKernel } from "@textlint/kernel";
+import markdownPlugin from "@textlint/textlint-plugin-markdown";
+// @ts-ignore
+import textlint from "textlint-rule-no-todo";
+
+const kernel = new TextlintKernel();
+const options = {
+	filePath: "request.md",
+	ext: ".md",
+	plugins: [
+		{
+			pluginId: "@textlint/textlint-plugin-markdown",
+			plugin: markdownPlugin,
+			options: true,
+		},
+	],
+	rules: [
+		{
+			ruleId: "no-todo",
+			rule: textlint,
+		},
+	],
+};
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
+		const text = await request.text();
+		const t = await kernel.lintText(text, options);
+		console.debug(
+			`linted: ${t.messages.length} messages. messages='${t.messages}'`,
+		);
+
+		return new Response(JSON.stringify(t.messages));
 	},
 } satisfies ExportedHandler<Env>;
